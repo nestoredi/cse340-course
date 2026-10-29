@@ -1,0 +1,296 @@
+/* ==========================================================
+   CSE 340 Service Network - main stylesheet
+   ========================================================== */
+
+:root {
+    --color-ink: #16302f;
+    --color-muted: #4a5f5d;
+    --color-primary: #0e5a57;
+    --color-primary-dark: #0a3f3d;
+    --color-accent: #f2b632;
+    --color-bg: #f4f7f6;
+    --color-surface: #ffffff;
+    --color-border: #d3dfdc;
+
+    --font-body: 'Public Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --radius: 10px;
+    --content-width: 68rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+}
+
+/* ---------- Accessibility helpers ---------- */
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-accent);
+    color: var(--color-primary-dark);
+    font-weight: 700;
+    border-radius: var(--radius);
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+a:focus-visible,
+.button:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+/* ---------- Header and navigation ---------- */
+
+.site-header {
+    background-color: var(--color-primary-dark);
+    border-bottom: 4px solid var(--color-accent);
+}
+
+.site-header-inner {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+}
+
+.site-brand {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+}
+
+.site-header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+}
+
+.site-header nav a {
+    display: block;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.site-header nav a:hover {
+    background-color: var(--color-accent);
+    color: var(--color-primary-dark);
+}
+
+.site-header a:focus-visible {
+    outline-color: #ffffff;
+}
+
+/* ---------- Main content ---------- */
+
+main {
+    flex: 1;
+    width: 100%;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 3rem;
+}
+
+h1,
+h2 {
+    line-height: 1.2;
+    color: var(--color-primary-dark);
+}
+
+h1 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+h2 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+    font-weight: 700;
+}
+
+p {
+    max-width: 65ch;
+    margin: 0 0 1rem;
+}
+
+/* ---------- Home page hero ---------- */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 6px solid var(--color-primary);
+    border-radius: var(--radius);
+}
+
+.hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+}
+
+.main-logo {
+    display: block;
+    width: 100%;
+    max-width: 24rem;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* ---------- Buttons ---------- */
+
+.button {
+    display: inline-block;
+    padding: 0.7rem 1.3rem;
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius);
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.button:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+.button-secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+}
+
+.button-secondary:hover {
+    background-color: var(--color-primary);
+    color: #ffffff;
+}
+
+/* ---------- Card lists (organizations, projects, categories) ---------- */
+
+.card-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.25rem;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: 4px solid var(--color-primary);
+    border-radius: var(--radius);
+}
+
+.card img {
+    flex-shrink: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.card div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.card strong {
+    font-size: 1.15rem;
+    color: var(--color-primary-dark);
+}
+
+.card span {
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+    padding: 1.5rem;
+    background-color: var(--color-primary-dark);
+    color: #ffffff;
+    text-align: center;
+}
+
+.site-footer p {
+    max-width: none;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* ---------- Responsive adjustments ---------- */
+
+@media (max-width: 48rem) {
+    .site-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+
+    main {
+        padding: 1.75rem 1rem 2.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
