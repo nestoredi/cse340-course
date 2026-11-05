@@ -5,24 +5,15 @@
 
     <h2>Upcoming Service Projects</h2>
     <ul class="card-list">
-        <li class="card">
-            <div>
-                <strong>Park Cleanup</strong>
-                <span>Join us to clean up local parks and make them beautiful!</span>
-            </div>
-        </li>
-        <li class="card">
-            <div>
-                <strong>Food Drive</strong>
-                <span>Help collect and distribute food to those in need.</span>
-            </div>
-        </li>
-        <li class="card">
-            <div>
-                <strong>Community Tutoring</strong>
-                <span>Volunteer to tutor students in various subjects.</span>
-            </div>
-        </li>
+        <% projects.forEach(project => { %>
+            <li class="card">
+                <div>
+                    <strong><%= project.project_date %>: <%= project.title %> (<em><%= project.organization_name %></em>)</strong>
+                    <p><%= project.description %></p>
+                    <span>Location: <%= project.location %></span>
+                </div>
+            </li>
+        <% }); %>
     </ul>
 </main>
 

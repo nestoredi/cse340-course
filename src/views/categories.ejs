@@ -5,18 +5,11 @@
 
     <p>Browse service projects by the kind of impact they make:</p>
     <ul class="card-list">
-        <li class="card">
-            <div><strong>Environmental</strong></div>
-        </li>
-        <li class="card">
-            <div><strong>Educational</strong></div>
-        </li>
-        <li class="card">
-            <div><strong>Community Service</strong></div>
-        </li>
-        <li class="card">
-            <div><strong>Health and Wellness</strong></div>
-        </li>
+        <% categories.forEach(category => { %>
+            <li class="card">
+                <div><strong><%= category.name %></strong></div>
+            </li>
+        <% }); %>
     </ul>
 </main>
 
