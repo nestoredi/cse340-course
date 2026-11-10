@@ -1,0 +1,34 @@
+// Import any needed model functions
+import { getUpcomingProjects, getProjectDetails } from '../models/projects.js';
+
+// Define the number of upcoming projects to show on the main projects page
+const NUMBER_OF_UPCOMING_PROJECTS = 5;
+
+// Define any controller functions
+const showProjectsPage = async (req, res) => {
+    const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
+    const title = 'Upcoming Service Projects';
+    res.render('projects', { title, projects });
+};
+
+const showProjectDetailsPage = async (req, res, next) => {
+    const projectId = req.params.id;
+
+    // Validate the route parameter: it must be a whole number
+    const project = /^\d+$/.test(projectId)
+        ? await getProjectDetails(projectId)
+        : null;
+
+    // No matching project: forward a 404 error to the global error handler
+    if (!project) {
+        const err = new Error('Service Project Not Found');
+        err.status = 404;
+        return next(err);
+    }
+
+    const title = 'Service Project Details';
+    res.render('project', { title, project });
+};
+
+// Export any controller functions
+export { showProjectsPage, showProjectDetailsPage };

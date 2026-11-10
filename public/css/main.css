@@ -294,3 +294,118 @@ p {
         transition: none !important;
     }
 }
+
+/* ---------- Card description text ---------- */
+
+.card p {
+    max-width: none;
+    margin: 0.15rem 0 0.35rem;
+    color: var(--color-ink);
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+/* ---------- Links inside page content ---------- */
+
+main a:not(.button) {
+    color: var(--color-primary);
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+}
+
+main a:not(.button):hover {
+    color: var(--color-primary-dark);
+}
+
+/* Make the whole project tile clickable (stretched link). The organization
+   link sits above the stretched area so it stays separately clickable. */
+.card-list .card {
+    position: relative;
+}
+
+main a.card-link {
+    text-decoration: none;
+}
+
+main a.card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+}
+
+main a.card-link:hover {
+    text-decoration: underline;
+}
+
+main a.card-org-link {
+    position: relative;
+    z-index: 1;
+}
+
+.card:hover {
+    box-shadow: 0 4px 14px rgba(10, 63, 61, 0.12);
+}
+
+/* ---------- Detail pages (organization and project) ---------- */
+
+.detail {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 6px solid var(--color-primary);
+    border-radius: var(--radius);
+}
+
+.detail-stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.detail-logo {
+    flex-shrink: 0;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.detail-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+}
+
+h3 {
+    margin: 0 0 0.75rem;
+    color: var(--color-primary-dark);
+    font-size: 1.3rem;
+}
+
+details {
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 48rem) {
+    .detail {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
