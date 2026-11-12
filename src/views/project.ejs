@@ -11,6 +11,16 @@
             <li><strong>Location:</strong> <%= project.location %></li>
             <li><strong>Organization:</strong> <a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a></li>
         </ul>
+
+        <% if (categories.length > 0) { %>
+            <h3>Categories</h3>
+            <ul class="tag-list">
+                <% categories.forEach(category => { %>
+                    <li><a class="tag" href="/category/<%= category.category_id %>"><%= category.name %></a></li>
+                <% }); %>
+            </ul>
+        <% } %>
+
         <p><a class="button button-secondary" href="/projects">Back to upcoming projects</a></p>
     </section>
 </main>
