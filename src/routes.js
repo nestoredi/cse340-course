@@ -22,7 +22,12 @@ import {
     showCategoriesPage,
     showCategoryDetailsPage,
     showAssignCategoriesForm,
-    processAssignCategoriesForm
+    processAssignCategoriesForm,
+    showNewCategoryForm,
+    processNewCategoryForm,
+    showEditCategoryForm,
+    processEditCategoryForm,
+    categoryValidation
 } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 
@@ -42,25 +47,49 @@ router.get('/project/:id', showProjectDetailsPage);
 // Route for category details page
 router.get('/category/:id', showCategoryDetailsPage);
 
-// Routes to create a new organization
+// Route for new organization page
 router.get('/new-organization', showNewOrganizationForm);
+
+// Route to handle new organization form submission
 router.post('/new-organization', organizationValidation, processNewOrganizationForm);
 
-// Routes to edit an organization
+// Route to display the edit organization form
 router.get('/edit-organization/:id', showEditOrganizationForm);
+
+// Route to handle the edit organization form submission
 router.post('/edit-organization/:id', organizationValidation, processEditOrganizationForm);
 
-// Routes to create a new service project
+// Route for new project page
 router.get('/new-project', showNewProjectForm);
+
+// Route to handle new project form submission
 router.post('/new-project', projectValidation, processNewProjectForm);
 
-// Routes to edit a service project
+// Route to display the edit project form
 router.get('/edit-project/:id', showEditProjectForm);
+
+// Route to handle the edit project form submission
 router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
-// Routes to assign categories to a project
+// Route for new category page
+router.get('/new-category', showNewCategoryForm);
+
+// Route to handle new category form submission
+router.post('/new-category', categoryValidation, processNewCategoryForm);
+
+// Route to display the edit category form
+router.get('/edit-category/:id', showEditCategoryForm);
+
+// Route to handle the edit category form submission
+router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
+
+// Routes to handle the assign categories to project form
 router.get('/assign-categories/:projectId', showAssignCategoriesForm);
 router.post('/assign-categories/:projectId', processAssignCategoriesForm);
+
+// Same form at the path written in the "Add routes" instructions of the activity
+router.get('/project/:projectId/assign-categories', showAssignCategoriesForm);
+router.post('/project/:projectId/assign-categories', processAssignCategoriesForm);
 
 // error-handling routes
 router.get('/test-error', testErrorPage);

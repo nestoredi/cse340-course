@@ -1,5 +1,6 @@
-// Import any needed model functions
 import { body, validationResult } from 'express-validator';
+
+// Import any needed model functions
 import {
     getAllOrganizations,
     getOrganizationDetails,
@@ -8,39 +9,40 @@ import {
 } from '../models/organizations.js';
 import { getProjectsByOrganizationId } from '../models/projects.js';
 
-// Define validation and sanitization rules for the organization form
+// Define validation and sanitization rules for organization form
 const organizationValidation = [
     body('name')
         .trim()
+        .escape()
         .notEmpty()
         .withMessage('Organization name is required')
         .isLength({ min: 3, max: 150 })
-        .withMessage('Organization name must be between 3 and 150 characters')
-        .escape(),
+        .withMessage('Organization name must be between 3 and 150 characters'),
+
     body('description')
         .trim()
+        .escape()
         .notEmpty()
         .withMessage('Organization description is required')
         .isLength({ max: 500 })
-        .withMessage('Organization description cannot exceed 500 characters')
-        .escape(),
+        .withMessage('Organization description cannot exceed 500 characters'),
+
     body('contactEmail')
         .normalizeEmail()
         .notEmpty()
         .withMessage('Contact email is required')
         .isEmail()
-        .withMessage('Please provide a valid email address')
+        .withMessage('Please provide a valid email address'),
+
+    // Only the edit form sends a logo filename, so this field is optional
+    body('logoFilename')
+        .optional()
+        .trim()
+        .isLength({ min: 1, max: 255 })
+        .withMessage('Logo filename is required and cannot exceed 255 characters')
+        .matches(/^[\w.-]+\.(png|jpe?g|gif|svg|webp)$/i)
+        .withMessage('Logo filename must be an image file name such as logo.png')
 ];
-
-// Helper: a route id must be a whole number
-const isValidId = (id) => /^\d+$/.test(id);
-
-// Helper: build a 404 error for the global error handler
-const createNotFoundError = (message) => {
-    const err = new Error(message);
-    err.status = 404;
-    return err;
-};
 
 // Define any controller functions
 const showOrganizationsPage = async (req, res) => {
@@ -53,13 +55,15 @@ const showOrganizationDetailsPage = async (req, res, next) => {
     const organizationId = req.params.id;
 
     // Validate the route parameter: it must be a whole number
-    const organizationDetails = isValidId(organizationId)
+    const organizationDetails = /^\d+$/.test(organizationId)
         ? await getOrganizationDetails(organizationId)
         : null;
 
     // No matching organization: forward a 404 error to the global error handler
     if (!organizationDetails) {
-        return next(createNotFoundError('Organization Not Found'));
+        const err = new Error('Organization Not Found');
+        err.status = 404;
+        return next(err);
     }
 
     const projects = await getProjectsByOrganizationId(organizationId);
@@ -76,9 +80,12 @@ const processNewOrganizationForm = async (req, res) => {
     // Check for validation errors
     const results = validationResult(req);
     if (!results.isEmpty()) {
+        // Validation failed - loop through errors
         results.array().forEach((error) => {
             req.flash('error', error.msg);
         });
+
+        // Redirect back to the new organization form
         return res.redirect('/new-organization');
     }
 
@@ -94,27 +101,41 @@ const processNewOrganizationForm = async (req, res) => {
 const showEditOrganizationForm = async (req, res, next) => {
     const organizationId = req.params.id;
 
-    const organizationDetails = isValidId(organizationId)
+    // Validate the route parameter: it must be a whole number
+    const organizationDetails = /^\d+$/.test(organizationId)
         ? await getOrganizationDetails(organizationId)
         : null;
 
+    // No matching organization: forward a 404 error to the global error handler
     if (!organizationDetails) {
-        return next(createNotFoundError('Organization Not Found'));
+        const err = new Error('Organization Not Found');
+        err.status = 404;
+        return next(err);
     }
 
     const title = 'Edit Organization';
     res.render('edit-organization', { title, organizationDetails });
 };
 
-const processEditOrganizationForm = async (req, res) => {
+const processEditOrganizationForm = async (req, res, next) => {
     const organizationId = req.params.id;
+
+    // Validate the route parameter: it must be a whole number
+    if (!/^\d+$/.test(organizationId)) {
+        const err = new Error('Organization Not Found');
+        err.status = 404;
+        return next(err);
+    }
 
     // Check for validation errors
     const results = validationResult(req);
     if (!results.isEmpty()) {
+        // Validation failed - loop through errors
         results.array().forEach((error) => {
             req.flash('error', error.msg);
         });
+
+        // Redirect back to the edit organization form
         return res.redirect(`/edit-organization/${organizationId}`);
     }
 
@@ -122,6 +143,7 @@ const processEditOrganizationForm = async (req, res) => {
 
     await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
 
+    // Set a success flash message
     req.flash('success', 'Organization updated successfully!');
     res.redirect(`/organization/${organizationId}`);
 };

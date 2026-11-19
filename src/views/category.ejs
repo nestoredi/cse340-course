@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+
 <main id="main-content">
     <h1><%= title %></h1>
 
@@ -21,6 +22,10 @@
         </ul>
     <% } %>
 
-    <p><a class="button button-secondary" href="/categories">Back to all categories</a></p>
+    <p class="action-links">
+        <a class="button" href="/edit-category/<%= categoryDetails.category_id %>">Edit Category</a>
+        <a class="button button-secondary" href="/categories">Back to all categories</a>
+    </p>
 </main>
+
 <%- include('partials/footer') %>
