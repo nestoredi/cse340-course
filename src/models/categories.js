@@ -42,5 +42,40 @@ const getCategoriesByProjectId = async (projectId) => {
     return result.rows;
 };
 
+// Internal helper: links one category to one project in the bridge table
+const assignCategoryToProject = async (categoryId, projectId) => {
+    const query = `
+        INSERT INTO project_category (category_id, project_id)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING;
+    `;
+
+    await db.query(query, [categoryId, projectId]);
+};
+
+/**
+ * Replaces all category assignments of a project with the given list.
+ * @param {number|string} projectId
+ * @param {Array<number|string>} categoryIds
+ */
+const updateCategoryAssignments = async (projectId, categoryIds) => {
+    // First, remove existing category assignments for the project
+    const deleteQuery = `
+        DELETE FROM project_category
+        WHERE project_id = $1;
+    `;
+    await db.query(deleteQuery, [projectId]);
+
+    // Next, add the new category assignments
+    for (const categoryId of categoryIds) {
+        await assignCategoryToProject(categoryId, projectId);
+    }
+};
+
 // Export the model functions
-export { getAllCategories, getCategoryDetails, getCategoriesByProjectId };
+export {
+    getAllCategories,
+    getCategoryDetails,
+    getCategoriesByProjectId,
+    updateCategoryAssignments
+};

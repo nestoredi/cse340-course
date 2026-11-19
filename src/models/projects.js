@@ -7,7 +7,7 @@ const getAllProjects = async () => {
             p.title,
             p.description,
             p.location,
-            TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS project_date,
+            TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS date,
             o.name AS organization_name
         FROM public.project p
         JOIN public.organization o
@@ -71,6 +71,7 @@ const getProjectDetails = async (projectId) => {
             p.title,
             p.description,
             TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS date,
+            TO_CHAR(p.project_date, 'YYYY-MM-DD') AS date_input,
             p.location,
             p.organization_id,
             o.name AS organization_name
@@ -112,5 +113,64 @@ const getProjectsByCategoryId = async (categoryId) => {
     return result.rows;
 };
 
+/**
+ * Creates a new service project.
+ * @returns {number} The id of the newly created project.
+ */
+const createProject = async (title, description, location, date, organizationId) => {
+    const query = `
+        INSERT INTO project (title, description, location, project_date, organization_id)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING project_id;
+    `;
+
+    const queryParams = [title, description, location, date, organizationId];
+    const result = await db.query(query, queryParams);
+
+    if (result.rows.length === 0) {
+        throw new Error('Failed to create project');
+    }
+
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Created new project with ID:', result.rows[0].project_id);
+    }
+
+    return result.rows[0].project_id;
+};
+
+/**
+ * Updates an existing project, including the organization it belongs to.
+ * @returns {number} The id of the updated project.
+ */
+const updateProject = async (projectId, title, description, location, date, organizationId) => {
+    const query = `
+        UPDATE project
+        SET title = $1, description = $2, location = $3, project_date = $4, organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+
+    const queryParams = [title, description, location, date, organizationId, projectId];
+    const result = await db.query(query, queryParams);
+
+    if (result.rows.length === 0) {
+        throw new Error('Project not found');
+    }
+
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Updated project with ID:', projectId);
+    }
+
+    return result.rows[0].project_id;
+};
+
 // Export the model functions
-export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails, getProjectsByCategoryId };
+export {
+    getAllProjects,
+    getProjectsByOrganizationId,
+    getUpcomingProjects,
+    getProjectDetails,
+    getProjectsByCategoryId,
+    createProject,
+    updateProject
+};

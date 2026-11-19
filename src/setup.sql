@@ -1,6 +1,9 @@
--- ========================================
--- Drop existing tables (children first) so this script can be re-run
--- ========================================
+-- ============================================================
+-- CSE 340 Service Network - database setup
+-- Run this whole file in pgAdmin (Query Tool) to re-create the database.
+-- ============================================================
+
+-- Drop in reverse dependency order so the script can be re-run safely
 DROP TABLE IF EXISTS project_category;
 DROP TABLE IF EXISTS project;
 DROP TABLE IF EXISTS category;
@@ -18,16 +21,14 @@ CREATE TABLE organization (
 );
 
 -- ========================================
--- Project Table
--- One organization sponsors many projects (1:N), and every project
--- belongs to exactly one organization.
+-- Project Table (one organization sponsors many projects)
 -- ========================================
 CREATE TABLE project (
     project_id SERIAL PRIMARY KEY,
     organization_id INTEGER NOT NULL,
-    title VARCHAR(150) NOT NULL,
+    title VARCHAR(200) NOT NULL,
     description TEXT NOT NULL,
-    location VARCHAR(255) NOT NULL,
+    location VARCHAR(200) NOT NULL,
     project_date DATE NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organization (organization_id)
 );
@@ -41,10 +42,7 @@ CREATE TABLE category (
 );
 
 -- ========================================
--- Project/Category junction table
--- Many-to-many: a project can have many categories and a category
--- can have many projects. The composite primary key prevents the
--- same project/category pair from being added twice.
+-- Bridge table: many-to-many between projects and categories
 -- ========================================
 CREATE TABLE project_category (
     project_id INTEGER NOT NULL,
@@ -56,7 +54,6 @@ CREATE TABLE project_category (
 
 -- ========================================
 -- Insert sample data: Organizations
--- (organization_id values 1, 2, 3 are assigned in this order)
 -- ========================================
 INSERT INTO organization (name, description, contact_email, logo_filename)
 VALUES
@@ -65,33 +62,7 @@ VALUES
 ('UnityServe Volunteers', 'A volunteer coordination group supporting local charities and service initiatives.', 'hello@unityserve.org', 'unityserve-logo.png');
 
 -- ========================================
--- Insert sample data: Projects (5 per organization)
--- project_id 1-5: BrightFuture, 6-10: GreenHarvest, 11-15: UnityServe
--- ========================================
-INSERT INTO project (organization_id, title, description, location, project_date)
-VALUES
--- BrightFuture Builders (organization_id = 1)
-(1, 'Neighborhood Playground Build', 'Help build a safe, sustainable playground for local families.', 'Oak Avenue Lot', '2026-12-05'),
-(1, 'Community Center Repair Day', 'Repair doors, windows, and walls at the community center.', 'Eastside Community Center', '2026-12-19'),
-(1, 'Accessible Ramp Construction', 'Build wheelchair ramps for neighbors who need safer access to their homes.', 'Various homes in Maple District', '2027-01-09'),
-(1, 'Bus Stop Shelter Build', 'Construct covered shelters at busy bus stops using recycled materials.', 'Fifth Street Transit Stop', '2027-01-23'),
-(1, 'School Library Shelving Project', 'Build and install new bookshelves for an elementary school library.', 'Lincoln Elementary School', '2027-02-06'),
--- GreenHarvest Growers (organization_id = 2)
-(2, 'Park Cleanup', 'Join us to clean up local parks and make them beautiful!', 'Riverside Park', '2026-12-06'),
-(2, 'Community Garden Day', 'Help plant and tend vegetables for neighborhood food pantries.', 'Maple Street Community Garden', '2026-12-13'),
-(2, 'Urban Composting Workshop', 'Learn to compost and help set up bins for local households.', 'GreenHarvest Learning Barn', '2027-01-10'),
-(2, 'Seed Library Setup', 'Organize a free seed library and teach families how to grow their own food.', 'Downtown Public Library', '2027-01-24'),
-(2, 'Fresh Produce Distribution', 'Pack and hand out fresh produce to families in need.', 'Northside Food Pantry', '2027-02-07'),
--- UnityServe Volunteers (organization_id = 3)
-(3, 'Food Drive', 'Help collect and distribute food to those in need.', 'Downtown Community Center', '2026-12-12'),
-(3, 'Community Tutoring', 'Volunteer to tutor students in various subjects.', 'Lincoln Public Library', '2026-12-20'),
-(3, 'Senior Visit Day', 'Spend time with seniors through games, music, and conversation.', 'Sunrise Care Home', '2027-01-16'),
-(3, 'Clothing Donation Sort', 'Sort and pack donated clothing for local shelters.', 'UnityServe Warehouse', '2027-01-30'),
-(3, 'Neighborhood Wellness Walk', 'Lead a friendly group walk to promote healthy habits in the community.', 'Riverside Trail', '2027-02-13');
-
--- ========================================
 -- Insert sample data: Categories
--- (category_id values 1 to 4 are assigned in this order)
 -- ========================================
 INSERT INTO category (name)
 VALUES
@@ -101,24 +72,55 @@ VALUES
 ('Health and Wellness');
 
 -- ========================================
--- Associate projects with categories
+-- Insert sample data: Projects (5 per organization)
+-- ========================================
+INSERT INTO project (organization_id, title, description, location, project_date)
+VALUES
+-- BrightFuture Builders (organization 1)
+(1, 'Neighborhood Playground Build', 'Volunteers assemble a new accessible playground, including swings, a climbing wall and safe rubber flooring.', 'Maple Park, Riverside', '2026-12-05'),
+(1, 'Community Center Roof Repair', 'Repair and weatherproof the roof of the community center so it can stay open through winter.', 'Oak Street Community Center', '2026-12-19'),
+(1, 'Accessible Ramp Installation', 'Build wheelchair ramps for the homes of senior neighbors who have difficulty entering their houses.', 'Elm Avenue Neighborhood', '2027-01-16'),
+(1, 'Community Garden Fence', 'Install a sturdy fence and raised-bed borders around the new shared community garden.', 'Willow Lane Lot', '2027-02-06'),
+(1, 'Bus Shelter Construction', 'Construct two covered bus shelters with benches to protect commuters from rain and sun.', 'Main Street Transit Stop', '2027-03-13'),
+
+-- GreenHarvest Growers (organization 2)
+(2, 'Rooftop Garden Workshop', 'Learn how to plant, water and harvest vegetables on a rooftop, with starter kits for every family.', 'Downtown Library Rooftop', '2026-12-12'),
+(2, 'Urban Compost Training', 'A hands-on class on turning kitchen scraps into compost for neighborhood gardens.', 'Cedar Street Learning Garden', '2027-01-09'),
+(2, 'Neighborhood Tree Planting', 'Plant fifty native trees along streets that currently have little shade.', 'Birch Boulevard', '2027-01-30'),
+(2, 'Seed Swap and Kids Gardening Day', 'Families trade seeds and children plant their first herb pots with guidance from volunteers.', 'Riverside Community Hall', '2027-02-20'),
+(2, 'Fresh Produce Distribution', 'Harvest and distribute fresh vegetables to families who need them, at no cost.', 'Harvest Hub Market Square', '2027-03-27'),
+
+-- UnityServe Volunteers (organization 3)
+(3, 'Food Pantry Sorting Day', 'Sort and pack donated food so it can be delivered to local families this holiday season.', 'Unity Food Pantry', '2026-12-08'),
+(3, 'Winter Coat Drive', 'Collect, clean and hand out warm coats and blankets to people facing the cold months.', 'Grace Church Hall', '2026-12-15'),
+(3, 'Senior Companion Visits', 'Volunteers spend an afternoon with seniors for conversation, board games and a shared meal.', 'Sunset Care Home', '2027-01-23'),
+(3, 'Free Health Screening Fair', 'Partner nurses provide free blood pressure and vision checks, plus healthy-living advice.', 'City Recreation Center', '2027-02-13'),
+(3, 'After-School Tutoring Night', 'Volunteers help students with reading and math homework in a friendly, supportive setting.', 'Lincoln Elementary Library', '2027-03-06');
+
+-- ========================================
+-- Associate every project with at least one category
 -- (1 Environmental, 2 Educational, 3 Community Service, 4 Health and Wellness)
--- Every project has at least one category; many have two.
 -- ========================================
 INSERT INTO project_category (project_id, category_id)
 VALUES
-(1, 3),
+(1, 3), (1, 4),
 (2, 3),
 (3, 3), (3, 4),
-(4, 3),
-(5, 2),
-(6, 1), (6, 3),
-(7, 1), (7, 4),
-(8, 1), (8, 2),
-(9, 1), (9, 2),
+(4, 1), (4, 3),
+(5, 3),
+(6, 1), (6, 2),
+(7, 1), (7, 2),
+(8, 1), (8, 3),
+(9, 2), (9, 3),
 (10, 3), (10, 4),
-(11, 3), (11, 4),
-(12, 2),
+(11, 3),
+(12, 3), (12, 4),
 (13, 3), (13, 4),
-(14, 3),
-(15, 4);
+(14, 4), (14, 3),
+(15, 2), (15, 3);
+
+-- Verify the data
+-- SELECT * FROM organization;
+-- SELECT * FROM project;
+-- SELECT * FROM category;
+-- SELECT * FROM project_category;
