@@ -23,7 +23,9 @@
     <% } %>
 
     <p class="action-links">
-        <a class="button" href="/edit-category/<%= categoryDetails.category_id %>">Edit Category</a>
+        <% if (user && user.role_name === 'admin') { %>
+            <a class="button" href="/edit-category/<%= categoryDetails.category_id %>">Edit Category</a>
+        <% } %>
         <a class="button button-secondary" href="/categories">Back to all categories</a>
     </p>
 </main>

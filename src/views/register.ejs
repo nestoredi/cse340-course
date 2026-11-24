@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<main id="main-content">
+    <h1><%= title %></h1>
+
+    <form class="form" action="/register" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                maxlength="100"
+                autocomplete="name"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email (Username)</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                maxlength="100"
+                autocomplete="email"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="new-password"
+                required
+            />
+        </div>
+
+        <div class="form-actions">
+            <button class="button" type="submit">Register</button>
+            <a class="button button-secondary" href="/login">I already have an account</a>
+        </div>
+    </form>
+</main>
+
+<%- include('partials/footer') %>

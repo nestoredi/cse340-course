@@ -1,25 +1,32 @@
 {
   "name": "cse340-service-network",
   "version": "1.0.0",
-  "description": "CSE 340 Service Network: organizations, service projects and categories",
+  "description": "CSE 340 Service Network - Week 01 initial site",
+  "homepage": "[your repo here]",
+  "bugs": {
+    "url": "[your repo here]"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+[your repo here]"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "cross-env NODE_ENV=development node --watch --env-file=.env server.js"
+    "dev": "nodemon",
+    "start": "node server.js"
   },
-  "engines": {
-    "node": ">=20.6"
-  },
-  "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "ejs": "^3.1.10",
-    "express": "^4.21.2",
-    "express-session": "^1.18.1",
-    "express-validator": "^7.2.1",
-    "pg": "^8.13.1"
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0"
+    "nodemon": "^3.1.11"
   }
 }

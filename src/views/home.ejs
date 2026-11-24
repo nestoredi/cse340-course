@@ -1,33 +1,23 @@
 <%- include('partials/header') %>
+
 <main id="main-content">
+    <h1><%= title %></h1>
+
     <section class="hero">
-        <h1>Connect neighbors with service projects that matter</h1>
-        <p>CSE 340 Service Network brings together partner organizations and volunteers. Find who is helping, see what is coming up, and join a project near you.</p>
-        <p class="hero-actions">
-            <a class="button" href="/projects">See upcoming projects</a>
-            <a class="button button-secondary" href="/organizations">Meet our partners</a>
-        </p>
+        <div class="hero-text">
+            <h2>Welcome to the CSE 340 Service Network!</h2>
+            <p>Our mission is to promote service across the world by connecting volunteers with service opportunities in their community.</p>
+            <p class="hero-links">
+                <a class="button" href="/projects">Find a service project</a>
+                <a class="button button-secondary" href="/organizations">Meet our partners</a>
+            </p>
+        </div>
+        <img class="main-logo" src="/images/cse340-service-network.png" alt="CSE 340 Service Network Logo">
     </section>
 
-    <section class="home-grid" aria-label="Ways to explore">
-        <article class="card">
-            <div>
-                <h2><a class="card-link" href="/organizations">Partner organizations</a></h2>
-                <p>Learn about the groups that sponsor service projects and how to reach them.</p>
-            </div>
-        </article>
-        <article class="card">
-            <div>
-                <h2><a class="card-link" href="/projects">Upcoming projects</a></h2>
-                <p>The next service projects on the calendar, with dates and locations.</p>
-            </div>
-        </article>
-        <article class="card">
-            <div>
-                <h2><a class="card-link" href="/categories">Browse by category</a></h2>
-                <p>Filter projects by the kind of impact they make, from environmental to educational.</p>
-            </div>
-        </article>
-    </section>
+    <% if (isLoggedIn) { %>
+        <p><a href="/dashboard">My Dashboard</a></p>
+    <% } %>
 </main>
+
 <%- include('partials/footer') %>

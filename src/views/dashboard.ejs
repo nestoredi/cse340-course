@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<main id="main-content">
+    <h1><%= title %></h1>
+
+    <section class="detail detail-stacked">
+        <h2>Welcome back, <%= name %></h2>
+        <ul class="detail-list">
+            <li><strong>Name:</strong> <%= name %></li>
+            <li><strong>Username:</strong> <%= email %></li>
+            <li><strong>Role:</strong> <%= role %></li>
+        </ul>
+    </section>
+</main>
+
+<%- include('partials/footer') %>

@@ -12,8 +12,8 @@ const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 // Define the port number the server will listen on
 const PORT = process.env.PORT || 3000;
 
-// Load the session secret from the environment
-const SESSION_SECRET = process.env.SESSION_SECRET || 'development-only-secret';
+// Load the secret used to sign the session cookie
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +24,7 @@ const app = express();
  * Configure Express middleware
  */
 
-// Set up session management (in-memory storage)
+// Set up session management
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
@@ -32,7 +32,7 @@ app.use(session({
     cookie: { maxAge: 60 * 60 * 1000 } // Session expires after 1 hour of inactivity
 }));
 
-// Use flash message middleware (must come after the session)
+// Use flash message middleware
 app.use(flash);
 
 // Allow Express to receive and process common POST data
@@ -56,8 +56,16 @@ app.use((req, res, next) => {
     next(); // Pass control to the next middleware or route
 });
 
-// Middleware to make NODE_ENV available to all templates
+// Middleware to set res.locals variables for all templates
 app.use((req, res, next) => {
+    res.locals.isLoggedIn = false;
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+    }
+
+    // Makes the logged-in user (and their role) available in every template
+    res.locals.user = (req.session && req.session.user) || null;
+
     res.locals.NODE_ENV = NODE_ENV;
     next();
 });

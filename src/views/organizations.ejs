@@ -1,19 +1,25 @@
 <%- include('partials/header') %>
+
 <main id="main-content">
     <h1><%= title %></h1>
+
     <p>Here are a few of our partner organizations:</p>
     <ul class="card-list">
         <% organizations.forEach(organization => { %>
             <li class="card">
                 <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo">
                 <div>
-                    <strong><a class="card-link" href="/organization/<%= organization.organization_id %>"><%= organization.name %></a></strong>
+                    <strong><a href="/organization/<%= organization.organization_id %>"><%= organization.name %></a></strong>
                     <p><%= organization.description %></p>
                     <span><%= organization.contact_email %></span>
                 </div>
             </li>
         <% }); %>
     </ul>
-    <p><a class="button" href="/new-organization">Add a new organization</a></p>
+
+    <% if (user && user.role_name === 'admin') { %>
+        <p class="action-links"><a class="button" href="/new-organization">Add a new organization</a></p>
+    <% } %>
 </main>
+
 <%- include('partials/footer') %>
