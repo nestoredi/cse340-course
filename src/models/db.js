@@ -5,55 +5,66 @@ import { Pool } from 'pg';
  *
  * A connection pool maintains a set of reusable database connections
  * to avoid the overhead of creating new connections for each request.
+ * This improves performance and reduces load on the database server.
+ *
+ * Uses a connection string from environment variables for simplified setup.
  * The connection string format is:
  * postgresql://username:password@host:port/database
- *
- * SSL is required by Render. For a local database (without SSL) set
- * DB_SSL=false in your .env file.
  */
-const useSsl = process.env.DB_SSL !== 'false';
-
 const pool = new Pool({
     connectionString: process.env.DB_URL,
-    ssl: useSsl ? { rejectUnauthorized: false } : false
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
-// A single reference, so the export has the same name in development and production
-let db = null;
+/**
+ * Common SSL Issue:
+ *
+ * You may encounter SSL connection errors depending on your operating system, Node.js
+ * version, or PostgreSQL server settings. If you have confirmed your credentials are
+ * correct but still see SSL errors, try updating the 'ssl' property in the Pool
+ * configuration above to:
+ *
+ * ssl: {
+ *     rejectUnauthorized: false
+ * }
+ */
 
-if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
-    /**
-     * In development mode, wrap the pool to log every query to the console,
-     * including how long it took and how many rows it returned.
-     */
-    db = {
-        async query(text, params) {
-            try {
-                const start = Date.now();
-                const res = await pool.query(text, params);
-                const duration = Date.now() - start;
-                console.log('Executed query:', {
-                    text: text.replace(/\s+/g, ' ').trim(),
-                    duration: `${duration}ms`,
-                    rows: res.rowCount
-                });
-                return res;
-            } catch (error) {
-                console.error('Error in query:', {
-                    text: text.replace(/\s+/g, ' ').trim(),
-                    error: error.message
-                });
-                throw error;
-            }
-        },
-        async close() {
-            await pool.end();
+/**
+ * In development mode with SQL logging enabled, wrap the pool to log every
+ * executed query (with timing and row count) to help with debugging.
+ * Otherwise, export the pool directly without logging overhead.
+ */
+const isLoggingEnabled = process.env.NODE_ENV === 'development'
+    && process.env.ENABLE_SQL_LOGGING === 'true';
+
+const loggingDb = {
+    query: async (text, params) => {
+        try {
+            const start = Date.now();
+            const res = await pool.query(text, params);
+            const duration = Date.now() - start;
+            console.log('Executed query:', {
+                text: text.replace(/\s+/g, ' ').trim(),
+                duration: `${duration}ms`,
+                rows: res.rowCount
+            });
+            return res;
+        } catch (error) {
+            console.error('Error in query:', {
+                text: text.replace(/\s+/g, ' ').trim(),
+                error: error.message
+            });
+            throw error;
         }
-    };
-} else {
-    // In production, export the pool directly without logging overhead
-    db = pool;
-}
+    },
+    close: async () => {
+        await pool.end();
+    }
+};
+
+const db = isLoggingEnabled ? loggingDb : pool;
 
 /**
  * Tests the database connection by executing a simple query.

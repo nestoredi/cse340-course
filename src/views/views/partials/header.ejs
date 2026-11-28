@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="/">CSE 340 Service Network</a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/organizations">Organizations</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/categories">Categories</a></li>
+                    <% if (locals.isLoggedIn) { %>
+                        <li><a href="/logout">Logout</a></li>
+                    <% } else { %>
+                        <li><a href="/register">Register</a></li>
+                        <li><a href="/login">Login</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <% const messages = (typeof flash === 'function') ? flash() : {}; %>
+    <% const hasMessages = Object.values(messages).some((list) => list.length > 0); %>
+    <% if (hasMessages) { %>
+        <div class="alert-area">
+            <% Object.keys(messages).forEach((type) => { %>
+                <% messages[type].forEach((msg) => { %>
+                    <div class="alert <%= type %>" role="<%= (type === 'error' || type === 'warning') ? 'alert' : 'status' %>"><%= msg %></div>
+                <% }); %>
+            <% }); %>
+        </div>
+    <% } %>

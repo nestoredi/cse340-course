@@ -1,5 +1,6 @@
-// Import any needed model functions
 import { body, validationResult } from 'express-validator';
+
+// Import any needed model functions
 import {
     getUpcomingProjects,
     getProjectDetails,
@@ -12,37 +13,31 @@ import { getAllOrganizations } from '../models/organizations.js';
 // Define the number of upcoming projects to show on the main projects page
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
-// Define validation and sanitization rules for the project form
+// Define validation rules for the service project form
 const projectValidation = [
     body('title')
         .trim()
         .notEmpty().withMessage('Title is required')
         .isLength({ min: 3, max: 200 }).withMessage('Title must be between 3 and 200 characters'),
+
     body('description')
         .trim()
         .notEmpty().withMessage('Description is required')
         .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
+
     body('location')
         .trim()
         .notEmpty().withMessage('Location is required')
         .isLength({ max: 200 }).withMessage('Location must be less than 200 characters'),
+
     body('date')
         .notEmpty().withMessage('Date is required')
         .isISO8601().withMessage('Date must be a valid date format'),
+
     body('organizationId')
         .notEmpty().withMessage('Organization is required')
         .isInt().withMessage('Organization must be a valid integer')
 ];
-
-// Helper: a route id must be a whole number
-const isValidId = (id) => /^\d+$/.test(id);
-
-// Helper: build a 404 error for the global error handler
-const createNotFoundError = (message) => {
-    const err = new Error(message);
-    err.status = 404;
-    return err;
-};
 
 // Define any controller functions
 const showProjectsPage = async (req, res) => {
@@ -55,13 +50,15 @@ const showProjectDetailsPage = async (req, res, next) => {
     const projectId = req.params.id;
 
     // Validate the route parameter: it must be a whole number
-    const project = isValidId(projectId)
+    const project = /^\d+$/.test(projectId)
         ? await getProjectDetails(projectId)
         : null;
 
     // No matching project: forward a 404 error to the global error handler
     if (!project) {
-        return next(createNotFoundError('Service Project Not Found'));
+        const err = new Error('Service Project Not Found');
+        err.status = 404;
+        return next(err);
     }
 
     const categories = await getCategoriesByProjectId(projectId);
@@ -77,20 +74,26 @@ const showNewProjectForm = async (req, res) => {
 
 const processNewProjectForm = async (req, res) => {
     // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
+    const results = validationResult(req);
+    if (!results.isEmpty()) {
+        // Loop through validation errors and flash them
+        results.array().forEach((error) => {
             req.flash('error', error.msg);
         });
+
+        // Redirect back to the new project form
         return res.redirect('/new-project');
     }
 
+    // Extract form data from req.body
     const { title, description, location, date, organizationId } = req.body;
 
     try {
-        const newProjectId = await createProject(title, description, location, date, organizationId);
+        // Create the new project in the database
+        await createProject(title, description, location, date, organizationId);
+
         req.flash('success', 'New service project created successfully!');
-        res.redirect(`/project/${newProjectId}`);
+        res.redirect('/projects');
     } catch (error) {
         console.error('Error creating new project:', error);
         req.flash('error', 'There was an error creating the service project.');
@@ -101,29 +104,42 @@ const processNewProjectForm = async (req, res) => {
 const showEditProjectForm = async (req, res, next) => {
     const projectId = req.params.id;
 
-    const project = isValidId(projectId)
+    // Validate the route parameter: it must be a whole number
+    const project = /^\d+$/.test(projectId)
         ? await getProjectDetails(projectId)
         : null;
 
+    // No matching project: forward a 404 error to the global error handler
     if (!project) {
-        return next(createNotFoundError('Service Project Not Found'));
+        const err = new Error('Service Project Not Found');
+        err.status = 404;
+        return next(err);
     }
 
-    // The organizations feed the dropdown so the project can be moved to another organization
+    // The form needs every organization so the project can be reassigned
     const organizations = await getAllOrganizations();
     const title = 'Edit Service Project';
     res.render('edit-project', { title, project, organizations });
 };
 
-const processEditProjectForm = async (req, res) => {
+const processEditProjectForm = async (req, res, next) => {
     const projectId = req.params.id;
 
+    // Validate the route parameter: it must be a whole number
+    if (!/^\d+$/.test(projectId)) {
+        const err = new Error('Service Project Not Found');
+        err.status = 404;
+        return next(err);
+    }
+
     // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
+    const results = validationResult(req);
+    if (!results.isEmpty()) {
+        results.array().forEach((error) => {
             req.flash('error', error.msg);
         });
+
+        // Redirect back to the edit project form
         return res.redirect(`/edit-project/${projectId}`);
     }
 

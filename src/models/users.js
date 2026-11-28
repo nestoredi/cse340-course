@@ -96,4 +96,26 @@ const authenticateUser = async (email, password) => {
 };
 
 // Only the functions the controller needs are exported
-export { createUser, authenticateUser };
+/**
+ * Retrieves all registered users together with the name of their role.
+ * The password hash is never selected, so it cannot leak into a view.
+ * @returns {Array} List of users: user_id, name, email, role_name.
+ */
+const getAllUsers = async () => {
+    const query = `
+        SELECT u.user_id, u.name, u.email, r.role_name
+        FROM users u
+        JOIN roles r ON u.role_id = r.role_id
+        ORDER BY u.name, u.email
+    `;
+
+    const result = await db.query(query);
+
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Retrieved users:', result.rows.length);
+    }
+
+    return result.rows;
+};
+
+export { createUser, authenticateUser, getAllUsers };

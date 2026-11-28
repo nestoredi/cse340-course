@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<main id="main-content">
+    <h1><%= title %></h1>
+
+    <% if (users.length === 0) { %>
+        <p>No users are registered yet.</p>
+    <% } else { %>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <caption class="visually-hidden">All registered users, with their email (username) and role</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email (Username)</th>
+                        <th scope="col">Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach((registeredUser) => { %>
+                        <tr>
+                            <td><%= registeredUser.name %></td>
+                            <td><%= registeredUser.email %></td>
+                            <td><span class="role-badge"><%= registeredUser.role_name %></span></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <p class="action-links"><a class="button button-secondary" href="/dashboard">Back to Dashboard</a></p>
+</main>
+
+<%- include('partials/footer') %>

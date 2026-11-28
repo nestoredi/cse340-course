@@ -38,6 +38,7 @@ import {
     requireLogin,
     requireRole,
     showDashboard,
+    showUsersPage,
     registerValidation,
     loginValidation
 } from './controllers/users.js';
@@ -114,6 +115,9 @@ router.get('/logout', processLogout);
 
 // Protected dashboard route (any logged-in user)
 router.get('/dashboard', requireLogin, showDashboard);
+
+// Protected users list route (admin only)
+router.get('/users', requireRole('admin'), showUsersPage);
 
 // error-handling routes
 router.get('/test-error', testErrorPage);

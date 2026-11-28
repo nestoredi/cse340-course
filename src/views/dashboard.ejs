@@ -10,6 +10,10 @@
             <li><strong>Username:</strong> <%= email %></li>
             <li><strong>Role:</strong> <%= role %></li>
         </ul>
+
+        <% if (user && user.role_name === 'admin') { %>
+            <p class="action-links"><a class="button" href="/users">View All Users</a></p>
+        <% } %>
     </section>
 </main>
 

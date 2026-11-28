@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
-<main id="main-content">
-    <h1><%= title %></h1>
+<main id="main-content" class="home-main">
+    <h1 class="visually-hidden"><%= title %></h1>
 
     <section class="hero">
         <div class="hero-text">
@@ -15,7 +15,7 @@
         <img class="main-logo" src="/images/cse340-service-network.png" alt="CSE 340 Service Network Logo">
     </section>
 
-    <% if (isLoggedIn) { %>
+    <% if (locals.isLoggedIn) { %>
         <p><a href="/dashboard">My Dashboard</a></p>
     <% } %>
 </main>

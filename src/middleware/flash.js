@@ -10,7 +10,8 @@
  *   req.flash()                           // Get all messages (all types)
  */
 
-const emptyFlash = () => ({
+// Create a fresh, empty flash storage object
+const createEmptyFlash = () => ({
     success: [],
     error: [],
     warning: [],
@@ -30,28 +31,35 @@ const flashMiddleware = (req, res, next) => {
     req.flash = (type, message) => {
         // Initialize flash storage if it doesn't exist
         if (!req.session.flash) {
-            req.session.flash = emptyFlash();
+            req.session.flash = createEmptyFlash();
         }
 
-        // SETTING: two arguments means we are storing a new message
+        // SETTING: Two arguments means we're storing a new message
         if (type && message) {
+            // Ensure this message type's array exists
             if (!req.session.flash[type]) {
                 req.session.flash[type] = [];
             }
+
+            // Add the message to the appropriate type array
             req.session.flash[type].push(message);
             return;
         }
 
-        // GETTING ONE TYPE: one argument means retrieve messages of that type
+        // GETTING ONE TYPE: One argument means retrieve messages of that type
         if (type && !message) {
             const messages = req.session.flash[type] || [];
+
+            // Clear this type's messages after retrieving
             req.session.flash[type] = [];
             return messages;
         }
 
-        // GETTING ALL: no arguments means retrieve all message types
+        // GETTING ALL: No arguments means retrieve all message types
         const allMessages = req.session.flash;
-        req.session.flash = emptyFlash();
+
+        // Clear all flash messages after retrieving
+        req.session.flash = createEmptyFlash();
         return allMessages;
     };
 
@@ -59,17 +67,20 @@ const flashMiddleware = (req, res, next) => {
 };
 
 /**
- * Make the flash function available to all templates via res.locals.
- * This middleware must run AFTER flashMiddleware.
+ * Make flash function available to all templates via res.locals
+ * This middleware must run AFTER flashMiddleware
  */
 const flashLocals = (req, res, next) => {
-    // The function is NOT called here; messages are consumed only when a template calls flash()
+    // Attach the flash function to res.locals so templates can access it
+    // The function is NOT called here, just made available
+    // Messages are only consumed when a template calls flash()
     res.locals.flash = req.flash;
     next();
 };
 
 /**
  * Combined flash middleware that runs both functions in the correct order
+ * Import and use this as a single middleware function in your application
  */
 const flash = (req, res, next) => {
     flashMiddleware(req, res, () => {

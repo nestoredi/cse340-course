@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
-import { createUser, authenticateUser } from '../models/users.js';
+import { createUser, authenticateUser, getAllUsers } from '../models/users.js';
 
 // Validation rules for the registration form (server-side)
 const registerValidation = [
@@ -161,7 +161,7 @@ const requireRole = (role) => {
         // Check if user's role matches the required role
         if (req.session.user.role_name !== role) {
             req.flash('error', 'You do not have permission to access this page.');
-            return res.redirect('/');
+            return res.redirect('/dashboard');
         }
 
         // User has the required role, continue
@@ -180,6 +180,18 @@ const showDashboard = (req, res) => {
     });
 };
 
+/**
+ * Displays the list of all registered users (admin only: protected by requireRole('admin')).
+ */
+const showUsersPage = async (req, res) => {
+    const users = await getAllUsers();
+
+    res.render('users', {
+        title: 'Registered Users',
+        users
+    });
+};
+
 export {
     showUserRegistrationForm,
     processUserRegistrationForm,
@@ -189,6 +201,7 @@ export {
     requireLogin,
     requireRole,
     showDashboard,
+    showUsersPage,
     registerValidation,
     loginValidation
 };

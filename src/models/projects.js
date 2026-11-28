@@ -7,7 +7,7 @@ const getAllProjects = async () => {
             p.title,
             p.description,
             p.location,
-            TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS date,
+            TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS project_date,
             o.name AS organization_name
         FROM public.project p
         JOIN public.organization o
@@ -71,7 +71,7 @@ const getProjectDetails = async (projectId) => {
             p.title,
             p.description,
             TO_CHAR(p.project_date, 'FMMonth FMDD, YYYY') AS date,
-            TO_CHAR(p.project_date, 'YYYY-MM-DD') AS date_input,
+            TO_CHAR(p.project_date, 'YYYY-MM-DD') AS date_iso,
             p.location,
             p.organization_id,
             o.name AS organization_name
@@ -114,12 +114,12 @@ const getProjectsByCategoryId = async (categoryId) => {
 };
 
 /**
- * Creates a new service project.
- * @returns {number} The id of the newly created project.
+ * Creates a new service project in the database.
+ * @returns {number} The id of the newly created project record.
  */
 const createProject = async (title, description, location, date, organizationId) => {
     const query = `
-        INSERT INTO project (title, description, location, project_date, organization_id)
+        INSERT INTO public.project (title, description, location, project_date, organization_id)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING project_id;
     `;
@@ -139,12 +139,12 @@ const createProject = async (title, description, location, date, organizationId)
 };
 
 /**
- * Updates an existing project, including the organization it belongs to.
- * @returns {number} The id of the updated project.
+ * Updates an existing service project, including the organization it belongs to.
+ * @returns {number} The id of the updated project record.
  */
 const updateProject = async (projectId, title, description, location, date, organizationId) => {
     const query = `
-        UPDATE project
+        UPDATE public.project
         SET title = $1, description = $2, location = $3, project_date = $4, organization_id = $5
         WHERE project_id = $6
         RETURNING project_id;
